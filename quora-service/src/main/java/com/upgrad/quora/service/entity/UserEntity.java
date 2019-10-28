@@ -7,7 +7,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 /*
-* CREATE TABLE IF NOT EXISTS USERS(id SERIAL, uuid VARCHAR(200) NOT NULL ,
+* CREATE TABLE IF NOT EXISTS USERS(id SERIAL,
+* uuid VARCHAR(200) NOT NULL ,
 * firstName VARCHAR(30) NOT NULL ,
 * lastName VARCHAR(30) NOT NULL ,
 * userName VARCHAR(30) UNIQUE NOT NULL,
