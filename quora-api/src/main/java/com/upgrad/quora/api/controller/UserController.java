@@ -41,7 +41,7 @@ public class UserController {
         userEntity.setEmail(signupUserRequest.getEmailAddress());
         userEntity.setCountry(signupUserRequest.getCountry());
         userEntity.setAboutme(signupUserRequest.getAboutMe());
-        userEntity.setRole("nonAdmin");
+        userEntity.setRole("nonadmin");
         userEntity.setContactnumber(signupUserRequest.getContactNumber());
         //This method returns to us a persisted userentity object
         final UserEntity createdUser = signupBusinessService.signup(userEntity);

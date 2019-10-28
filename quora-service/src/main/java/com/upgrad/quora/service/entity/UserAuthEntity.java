@@ -4,10 +4,13 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 /*
@@ -25,7 +28,7 @@ CREATE TABLE IF NOT EXISTS USER_AUTH(
 
 @Entity
 @Table(name = "USER_AUTH")
-public class UserAuthEntity {
+public class UserAuthEntity implements Serializable {
 
     @Id
     @Column(name = "ID")
@@ -37,9 +40,10 @@ public class UserAuthEntity {
     @Size(max = 64)
     private String uuid;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "USER_ID")
     @NotNull
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private UserEntity user;
 
     @Column(name = "ACCESS_TOKEN")
