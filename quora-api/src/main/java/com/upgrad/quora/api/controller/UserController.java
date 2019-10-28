@@ -38,10 +38,13 @@ public class UserController {
         userEntity.setFirstName(signupUserRequest.getFirstName());
         userEntity.setLastName(signupUserRequest.getLastName());
         userEntity.setDob(signupUserRequest.getDob());
+        userEntity.setUsername(signupUserRequest.getUserName());
+        userEntity.setPassword(signupUserRequest.getPassword());
         userEntity.setEmail(signupUserRequest.getEmailAddress());
         userEntity.setCountry(signupUserRequest.getCountry());
         userEntity.setAboutme(signupUserRequest.getAboutMe());
         userEntity.setRole("nonadmin");
+        userEntity.setSalt("1234abc");
         userEntity.setContactnumber(signupUserRequest.getContactNumber());
         //This method returns to us a persisted userentity object
         final UserEntity createdUser = signupBusinessService.signup(userEntity);

@@ -3,7 +3,6 @@ package com.upgrad.quora.service.entity;
 import org.apache.commons.lang3.builder.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 /*
@@ -36,33 +35,27 @@ public class UserEntity implements Serializable {
     @Size(max = 64)
     private String uuid;
 
-    @Column(name = "FIRST_NAME")
-    @NotNull
+    @Column(name = "FIRSTNAME")
     @Size(max = 200)
     private String firstName;
 
-    @Column(name = "LAST_NAME")
-    @NotNull
+    @Column(name = "LASTNAME")
     @Size(max = 200)
     private String lastName;
 
     @Column(name = "USERNAME")
-    @NotNull
     @Size(max = 30)
     private String username;
 
     @Column(name = "EMAIL")
-    @NotNull
     @Size(max = 200)
     private String email;
 
     @Column(name = "PASSWORD")
     @ToStringExclude
-    @NotNull
     private String password;
 
     @Column(name = "SALT")
-    @NotNull
     @Size(max = 200)
     private String salt;
 
@@ -78,6 +71,11 @@ public class UserEntity implements Serializable {
     @Size(max = 30)
     private String dob;
 
+    @Column(name="CONTACTNUMBER")
+    @Size(max = 30)
+    private String contactnumber;
+
+
     @Column(name="ROLE")
     @Size(max = 30)
     private String role;
@@ -89,11 +87,6 @@ public class UserEntity implements Serializable {
     public void setUsername(String username) {
         this.username = username;
     }
-
-    @Column(name="CONTACTNUMBER")
-    @NotNull
-    @Size(max = 30)
-    private String contactnumber;
 
     public long getId() {
         return id;
