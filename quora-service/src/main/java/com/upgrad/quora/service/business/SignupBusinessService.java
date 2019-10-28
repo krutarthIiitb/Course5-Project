@@ -14,6 +14,9 @@ public class SignupBusinessService {
     @Autowired
     private UserDao userDao;
 
+    @Autowired
+    private PasswordCryptographyProvider passwordCryptographyProvider;
+
     @Transactional(propagation = Propagation.REQUIRED)
     public UserEntity signup(UserEntity userEntity) throws SignUpRestrictedException ,NullPointerException{
             if (userDao.getUserbyUsername(userEntity.getUsername()) != null) {
@@ -21,6 +24,9 @@ public class SignupBusinessService {
             } else if (userDao.getUserByEmail(userEntity.getEmail()) != null) {
                 throw new SignUpRestrictedException("SGR-002", "This user has already been registered, try with any other emailId");
             } else {
+                String[] encryptedText = passwordCryptographyProvider.encrypt(userEntity.getPassword());
+                userEntity.setSalt(encryptedText[0]);
+                userEntity.setPassword(encryptedText[1]);
                 userDao.createUser(userEntity);
             }
         return userEntity;
