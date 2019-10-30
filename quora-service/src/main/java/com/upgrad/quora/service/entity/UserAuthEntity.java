@@ -57,7 +57,6 @@ public class UserAuthEntity implements Serializable {
     private String accessToken;
 
     @Column(name = "EXPIRES_AT")
-    @NotNull
     private ZonedDateTime expiresAt;
 
     @Column(name = "LOGIN_AT")

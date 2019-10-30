@@ -32,10 +32,9 @@ import java.util.Base64;
 import java.util.UUID;
 
 /*@Author : Deepthi Vemparala
-* This module is used to build signup Endpoint
-* Exceptions handled : SignUpRestrictedException
-* The Json format generated is consumed and the output generated is also in same format*/
-
+ * This module is used to build signup Endpoint
+ * Exceptions handled : SignUpRestrictedException
+ * The Json format generated is consumed and the output generated is also in same format*/
 
 
 @RestController
@@ -49,7 +48,7 @@ public class UserController {
     private UserAuthenticationService userAuthenticationService;
 
     @RequestMapping(method = RequestMethod.POST, path = "/user/signup", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<SignupUserResponse> signup(final SignupUserRequest signupUserRequest) throws SignUpRestrictedException{
+    public ResponseEntity<SignupUserResponse> signup(SignupUserRequest signupUserRequest) throws SignUpRestrictedException {
         /*We get all the user attributes from the signupUSerRequest Json, we set it to the userEntity object and send it to DAO in
         signupBusinessService to be persisted into the DB*/
         final UserEntity userEntity = new UserEntity();
@@ -65,17 +64,18 @@ public class UserController {
         userEntity.setRole("nonadmin");
         userEntity.setSalt("1234abc");
         userEntity.setContactnumber(signupUserRequest.getContactNumber());
+
         //This method returns to us a persisted userentity object
 
-            final UserEntity createdUser = signupBusinessService.signup(userEntity);
-            SignupUserResponse userResponse = new SignupUserResponse().id(createdUser.getUuid()).status("USER SUCCESSFULLY REGISTERED");
-            return new ResponseEntity<SignupUserResponse>(userResponse, HttpStatus.CREATED);
+        final UserEntity createdUser = signupBusinessService.signup(userEntity);
+        SignupUserResponse userResponse = new SignupUserResponse().id(createdUser.getUuid()).status("USER SUCCESSFULLY REGISTERED");
+        return new ResponseEntity<SignupUserResponse>(userResponse, HttpStatus.CREATED);
     }
 
 
     @RequestMapping(method = RequestMethod.POST, path = "/user/signin", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<SigninResponse> signIn(@RequestHeader("authorization") final String authorization) throws AuthorizationFailedException, AuthenticationFailedException, SignUpRestrictedException {
-        byte[] decode = Base64.getDecoder().decode(authorization);
+    public ResponseEntity<SigninResponse> signIn(@RequestHeader("authorization") String authorization) throws AuthorizationFailedException, AuthenticationFailedException, SignUpRestrictedException {
+        byte[] decode = Base64.getDecoder().decode(authorization.split("Basic ")[1]);
         String decodedText = new String(decode);
         String[] decodedArray = decodedText.split(":");
 
@@ -87,16 +87,14 @@ public class UserController {
         signinResponse.setId(user.getUuid());
         signinResponse.setMessage("SIGNED IN SUCCESSFULLY");
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("access-token",userAuthToken.getAccessToken());
+        httpHeaders.add("access-token", userAuthToken.getAccessToken());
         return new ResponseEntity<SigninResponse>(signinResponse, httpHeaders, HttpStatus.OK);
     }
-    /*We will be getting the user access token added to the when user signin , we will use it to help user logout */
+      //*We will be getting the user access token added to the when user signin , we will use it to help user logout *//*
     @RequestMapping(method = RequestMethod.POST, path = "/user/signout", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SignoutResponse> singOut(@RequestHeader("accessToken") final String accessToken) throws SignOutRestrictedException {
-        byte[] decode = Base64.getDecoder().decode(accessToken);
-        String decodedText = new String(decode);
-        String[] decodedArray = decodedText.split(":");
-        UserAuthEntity userAuthEntity = userAuthenticationService.signOut(decodedArray[0]);
+
+        UserAuthEntity userAuthEntity = userAuthenticationService.signOut(accessToken);
         SignoutResponse signoutResponse = new SignoutResponse();
         signoutResponse.setId(userAuthEntity.getUuid());
         signoutResponse.setId("SIGNED OUT SUCCESSFULLY");
