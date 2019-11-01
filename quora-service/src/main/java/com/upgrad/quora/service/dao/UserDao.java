@@ -35,25 +35,36 @@ public class UserDao {
         }
     }
 
-    public UserEntity getUser(final String userUuid) {
+    public UserEntity getUser(String uuid) {
         try {
-            return entityManager.createNamedQuery("userByUuid", UserEntity.class).setParameter("userUuid", userUuid).getSingleResult();
+            return entityManager.createNamedQuery("userByUuid", UserEntity.class).setParameter("uuid", uuid).getSingleResult();
         } catch (NoResultException nre) {
             return null;
         }
     }
 
-    public UserAuthEntity getUserByAuthToken(final String accessToken) {
+    public UserAuthEntity getUserByAuthToken(String accessToken) {
         try {
             return entityManager.createNamedQuery("userByAuthToken", UserAuthEntity.class).setParameter("accessToken", accessToken).getSingleResult();
-
         } catch (NoResultException nre) {
             return null;
         }
     }
 
-    public void updateUser(UserEntity updatedUser, UserAuthEntity userAuthEntity) {
-        entityManager.merge(updatedUser);
+    public UserAuthEntity createAuthEntity(UserAuthEntity userAuthEntity) {
+        entityManager.persist(userAuthEntity);
+        return userAuthEntity;
+    }
+
+    public UserAuthEntity getUserAuthEntity(String uuid){
+        try{
+            return entityManager.createNamedQuery("userAuthTokenByuuid", UserAuthEntity.class).setParameter("uuid",uuid).getSingleResult();
+        }catch (NoResultException nre){
+            return null;
+        }
+    }
+
+    public void updateUserAuth(UserAuthEntity userAuthEntity){
         entityManager.merge(userAuthEntity);
     }
 }

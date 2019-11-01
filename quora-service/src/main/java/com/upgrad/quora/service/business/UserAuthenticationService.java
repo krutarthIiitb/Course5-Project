@@ -44,19 +44,23 @@ public class UserAuthenticationService {
             userAuthEntity.setExpiresAt(expiresAt);
             userAuthEntity.setAccessToken(jwtTokenProvider.generateToken(user.getUuid(), now, expiresAt));
             userAuthEntity.setUuid(user.getUuid());
-            userDao.updateUser(user,userAuthEntity);
+            userDao.createAuthEntity(userAuthEntity);
             return userAuthEntity;
         } else {
             throw new AuthenticationFailedException("ATH-002", "Password failed");
         }
     }
 
-    public UserAuthEntity signOut(final String accessToken)throws SignOutRestrictedException {
-        UserAuthEntity userAuthEntity = userDao.getUserByAuthToken(accessToken);
-        if(userAuthEntity==null)throw new SignOutRestrictedException("SGR-001","User is not Signed in");
-        userAuthEntity.setLogoutAt(ZonedDateTime.now());
-        UserEntity user = userAuthEntity.getUser();
-        userDao.updateUser(user,userAuthEntity);
-        return userAuthEntity;
+    @Transactional(propagation = Propagation.REQUIRED)
+    public UserAuthEntity signOut(String accessToken) throws SignOutRestrictedException {
+      UserAuthEntity userAuthEntity = userDao.getUserByAuthToken(accessToken);
+      //If the user has signed in there will be an entry in the userAuth table
+      if(userAuthEntity==null)throw new SignOutRestrictedException("SGR-001","User is not Signed in");
+      // if there an entry with the accessToken then update the log out time with current time
+      userAuthEntity.setLogoutAt(ZonedDateTime.now());
+      //update database with the logged out detail
+      userDao.updateUserAuth(userAuthEntity);
+      // return the updated authEntity
+      return userAuthEntity;
     }
 }

@@ -32,7 +32,7 @@ import java.util.Base64;
 import java.util.UUID;
 
 /*@Author : Deepthi Vemparala
- * This module is used to build signup Endpoint
+ * This module is used to build signup , Signin and Signout Endpoint in UserController
  * Exceptions handled : SignUpRestrictedException
  * The Json format generated is consumed and the output generated is also in same format*/
 
@@ -75,10 +75,11 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.POST, path = "/user/signin", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SigninResponse> signIn(@RequestHeader("authorization") String authorization) throws AuthorizationFailedException, AuthenticationFailedException, SignUpRestrictedException {
+
         byte[] decode = Base64.getDecoder().decode(authorization.split("Basic ")[1]);
         String decodedText = new String(decode);
         String[] decodedArray = decodedText.split(":");
-
+        //UserAuthToken is generated once the user is allowed to signin
 
         UserAuthEntity userAuthToken = userAuthenticationService.authenticate(decodedArray[0], decodedArray[1]);
 
@@ -90,14 +91,20 @@ public class UserController {
         httpHeaders.add("access-token", userAuthToken.getAccessToken());
         return new ResponseEntity<SigninResponse>(signinResponse, httpHeaders, HttpStatus.OK);
     }
-      //*We will be getting the user access token added to the when user signin , we will use it to help user logout *//*
-    @RequestMapping(method = RequestMethod.POST, path = "/user/signout", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<SignoutResponse> singOut(@RequestHeader("accessToken") final String accessToken) throws SignOutRestrictedException {
 
-        UserAuthEntity userAuthEntity = userAuthenticationService.signOut(accessToken);
+    //*We will be getting the user access token added to the when user signin , we will use it to help user logout *//*
+    @RequestMapping(method = RequestMethod.POST, path = "/user/signout", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<SignoutResponse> singOut(@RequestHeader("authorization") String authorization) throws SignOutRestrictedException {
+
+        UserAuthEntity userAuthEntity = userAuthenticationService.signOut(authorization);
+
+        //if (userAuthEntity == null) throw new SignOutRestrictedException("SGR-001", "User is not Signed in");
+        UserEntity userEntity = userAuthEntity.getUser();
+
+        //Building the signout Response for the logged in user
         SignoutResponse signoutResponse = new SignoutResponse();
-        signoutResponse.setId(userAuthEntity.getUuid());
-        signoutResponse.setId("SIGNED OUT SUCCESSFULLY");
-        return new ResponseEntity<SignoutResponse>(signoutResponse,HttpStatus.OK);
+        signoutResponse.setId(userEntity.getUuid());
+        signoutResponse.setMessage("SIGNED OUT SUCCESSFULLY");
+        return new ResponseEntity<SignoutResponse>(signoutResponse, HttpStatus.OK);
     }
 }

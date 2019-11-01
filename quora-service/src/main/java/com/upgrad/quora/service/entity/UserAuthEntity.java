@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS USER_AUTH(
 @Table(name = "USER_AUTH")
 @NamedQueries(
         {
-                @NamedQuery(name = "userByAuthToken", query = "select u from UserAuthEntity u where u.accessToken =:accessToken")
+                @NamedQuery(name = "userByAuthToken", query = "select ut from UserAuthEntity ut where ut.accessToken =:accessToken"),
+                @NamedQuery(name = "userAuthTokenByuuid", query ="select u from UserAuthEntity u where u.uuid=:uuid")
         }
 )
 
