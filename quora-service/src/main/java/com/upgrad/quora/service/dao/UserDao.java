@@ -19,6 +19,13 @@ public class UserDao {
         return userEntity;
     }
 
+    public UserEntity deleteUser(UserEntity userEntity){
+        UserEntity deleteduserEntity = userEntity;
+        entityManager.remove(userEntity);
+        //This should delete on cascade the entry of the corresponding userAuthEntity too
+        return deleteduserEntity;
+    }
+
     public UserEntity getUserbyUsername(final String username) {
         try {
             return entityManager.createNamedQuery("userByName", UserEntity.class).setParameter("username", username).getSingleResult();

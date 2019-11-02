@@ -7,6 +7,8 @@ import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CommonBusinessService {
@@ -14,7 +16,7 @@ public class CommonBusinessService {
     @Autowired
     private UserDao userDao;
 
-    // implementing polymorphism here with different signatures but same method name
+    @Transactional(propagation = Propagation.REQUIRED)
     public UserAuthEntity getUser(String uuid, String accessToken) throws AuthorizationFailedException, UserNotFoundException {
         UserAuthEntity userAuthEntity = userDao.getUserByAuthToken(accessToken);
         UserEntity userEntity = userDao.getUser(uuid);
