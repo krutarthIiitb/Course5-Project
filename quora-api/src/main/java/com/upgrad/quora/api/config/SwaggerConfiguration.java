@@ -16,8 +16,13 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfiguration {
 
+    /*This method generates an object called docket which is used by springfox to generate UI*/
     @Bean
     public Docket swagger() {
-        return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.basePackage("com.upgrad.quora.api.controller")).paths(PathSelectors.any()).build();
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.upgrad.quora.api.controller"))/*apis are paths of the controller */
+                .paths(PathSelectors.any()).build();
+                /*Controllers have end point configuration which is the path, the path is parsed and endpoint is created out of it*/
     }
 }
