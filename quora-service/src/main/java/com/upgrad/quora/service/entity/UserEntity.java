@@ -3,6 +3,7 @@ package com.upgrad.quora.service.entity;
 import org.apache.commons.lang3.builder.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 /*
@@ -27,7 +28,8 @@ import java.io.Serializable;
 @NamedQueries(
         {
                 @NamedQuery(name = "userByName", query = "select u from UserEntity u where u.username = :username"),
-                @NamedQuery(name = "userByEmail", query = "select u from UserEntity u where u.email =:email")
+                @NamedQuery(name = "userByEmail", query = "select u from UserEntity u where u.email =:email"),
+                @NamedQuery(name = "userByUuid", query = "select u from UserEntity u where u.uuid =:uuid")
         }
 )
 public class UserEntity implements Serializable {
@@ -38,26 +40,32 @@ public class UserEntity implements Serializable {
     private long id;
 
     @Column(name = "UUID")
+    @NotNull
     @Size(max = 64)
     private String uuid;
 
     @Column(name = "FIRSTNAME")
+    @NotNull
     @Size(max = 200)
     private String firstName;
 
     @Column(name = "LASTNAME")
+    @NotNull
     @Size(max = 200)
     private String lastName;
 
     @Column(name = "USERNAME")
+    @NotNull
     @Size(max = 30)
     private String username;
 
     @Column(name = "EMAIL")
+    @NotNull
     @Size(max = 200)
     private String email;
 
     @Column(name = "PASSWORD")
+    @NotNull
     @ToStringExclude
     private String password;
 

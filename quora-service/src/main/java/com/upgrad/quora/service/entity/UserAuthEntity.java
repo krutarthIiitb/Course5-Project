@@ -28,6 +28,13 @@ CREATE TABLE IF NOT EXISTS USER_AUTH(
 
 @Entity
 @Table(name = "USER_AUTH")
+@NamedQueries(
+        {
+                @NamedQuery(name = "userByAuthToken", query = "select ut from UserAuthEntity ut where ut.accessToken =:accessToken"),
+                @NamedQuery(name = "userAuthTokenByuuid", query ="select u from UserAuthEntity u where u.uuid=:uuid")
+        }
+)
+
 public class UserAuthEntity implements Serializable {
 
     @Id
@@ -42,7 +49,6 @@ public class UserAuthEntity implements Serializable {
 
     @OneToOne
     @JoinColumn(name = "USER_ID")
-    @NotNull
     @OnDelete(action = OnDeleteAction.CASCADE)
     private UserEntity user;
 
@@ -52,7 +58,6 @@ public class UserAuthEntity implements Serializable {
     private String accessToken;
 
     @Column(name = "EXPIRES_AT")
-    @NotNull
     private ZonedDateTime expiresAt;
 
     @Column(name = "LOGIN_AT")
