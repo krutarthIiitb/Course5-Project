@@ -21,10 +21,11 @@ public class AdminController {
 
     @RequestMapping(method = RequestMethod.DELETE, path = "/admin/user/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<UserDeleteResponse> deleteUser(@PathVariable("userId") final String userId, @RequestHeader("authorization") String authorization) throws AuthorizationFailedException, UserNotFoundException {
+        //The response to be generated for this method
         UserDeleteResponse userDeleteResponse = new UserDeleteResponse();
 
         // fetching the userEntity corresponding to the userId found in the path
-        UserEntity userEntity = adminBusinessService.deleteUser(userId,authorization);
+        UserEntity userEntity = adminBusinessService.deleteUser(userId, authorization);
 
         // The uuid and the success message is sent as a json response
         userDeleteResponse.setId(userEntity.getUuid());

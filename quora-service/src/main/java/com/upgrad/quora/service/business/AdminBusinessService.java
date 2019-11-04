@@ -18,29 +18,39 @@ public class AdminBusinessService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public UserEntity deleteUser(String uuid, String accessToken) throws AuthorizationFailedException, UserNotFoundException {
-        UserEntity userEntity = userDao.getUser(uuid);
+
+        // fetch the user with the uuid
+        UserEntity userToBeDeleted = userDao.getUser(uuid);
 
         // If there is no entry in userEntity corresponding to the user in db
-        if (userEntity == null)
+        if (userToBeDeleted == null)
             throw new UserNotFoundException("USR-001", "User with entered uuid to be deleted does not exist");
 
-        UserAuthEntity userAuthEntity = userDao.getUserByAuthToken(accessToken);
-        // if there is not authEntry then
-        if (userAuthEntity == null) throw new AuthorizationFailedException("ATHR-001","User has not signed in.");
+        // Fetching user using the uuid , this user needs to be deleted
+        UserAuthEntity userToBeDeletedAuthEntity = userDao.getUserAuthEntity(uuid);
 
-        //Check if the given user is admin, only then proceed else throw exception
-        if (userEntity.getRole().equals("nonadmin"))
-            throw new AuthorizationFailedException("ATHR-003", "Unauthorized Access, Entered user is not an admin");
+        // if there is no authEntry then
+        if (userToBeDeletedAuthEntity == null)
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in.");
 
 
-        // if there is no entry for corresponding accessToken means user is not signin
-        if (userAuthEntity == null) throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
-
-        //  if there is an antry for logout in the userAuthEntity , this means user has logged out
-        if (userAuthEntity.getLogoutAt() != null)
+        //  if there is an entry for logout in the userAuthEntity , this means admin has logged out
+        if (userToBeDeletedAuthEntity.getLogoutAt() != null)
             throw new AuthorizationFailedException("ATHR-002", "User is signed out");
 
+        //Fetch details of admin user
+        UserAuthEntity adminUserAuthEntity = userDao.getUserByAuthToken(accessToken);
+        if(adminUserAuthEntity==null)throw new AuthorizationFailedException("ATHR-001", "User has not signed in.");
+        //fetch the admin user
+        UserEntity adminUser = adminUserAuthEntity.getUser();
+        if(adminUser==null)throw new UserNotFoundException("USR-001", "User with entered uuid to be deleted does not exist");
+
+        //Check if the given user is admin, only then proceed else throw exception
+        if (adminUser.getRole().equals("nonadmin"))
+            throw new AuthorizationFailedException("ATHR-003", "Unauthorized Access, Entered user is not an admin");
+
         //Now if it passes all above cases, its the admin and they can delete the user
-        return userDao.deleteUser(userEntity);
+        UserEntity deletedUser = userDao.deleteUser(userToBeDeletedAuthEntity.getUser());
+        return deletedUser;
     }
 }

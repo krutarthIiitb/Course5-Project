@@ -47,10 +47,15 @@ public class UserController {
     @Autowired
     private UserAuthenticationService userAuthenticationService;
 
+    /* The signup is the first functionality in Rest endpoint 1 .
+    We are taking the input from the user in and generating JSON format as output.
+
+    * */
     @RequestMapping(method = RequestMethod.POST, path = "/user/signup", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SignupUserResponse> signup(SignupUserRequest signupUserRequest) throws SignUpRestrictedException {
         /*We get all the user attributes from the signupUSerRequest Json, we set it to the userEntity object and send it to DAO in
         signupBusinessService to be persisted into the DB*/
+
         final UserEntity userEntity = new UserEntity();
         userEntity.setUuid(UUID.randomUUID().toString());
         userEntity.setFirstName(signupUserRequest.getFirstName());
@@ -66,27 +71,35 @@ public class UserController {
         userEntity.setContactnumber(signupUserRequest.getContactNumber());
 
         //This method returns to us a persisted userentity object
+        final UserEntity createdUser = signupBusinessService.signUp(userEntity);
 
-        final UserEntity createdUser = signupBusinessService.signup(userEntity);
         SignupUserResponse userResponse = new SignupUserResponse().id(createdUser.getUuid()).status("USER SUCCESSFULLY REGISTERED");
         return new ResponseEntity<SignupUserResponse>(userResponse, HttpStatus.CREATED);
     }
 
+    /* The below implementation is for Signin functionality
+    The user is allowed to login if the username is not already logged in
+    when user is allowed to signin , the userAuthEntity is created corresponding to the userEntity
+    response in Json format is generated
+    * */
 
     @RequestMapping(method = RequestMethod.POST, path = "/user/signin", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SigninResponse> signIn(@RequestHeader("authorization") String authorization) throws AuthorizationFailedException, AuthenticationFailedException, SignUpRestrictedException,ArrayIndexOutOfBoundsException {
 
+        // username and password are extracted from header information
+        //Basic username:password" (where username:password of the String is encoded to Base64 format)
         byte[] decode = Base64.getDecoder().decode(authorization.split("Basic ")[1]);
         String decodedText = new String(decode);
         String[] decodedArray = decodedText.split(":");
+
         //UserAuthToken is generated once the user is allowed to signin
-
         UserAuthEntity userAuthToken = userAuthenticationService.authenticate(decodedArray[0], decodedArray[1]);
+        //UserEntity user = userAuthToken.getUser();
 
-        UserEntity user = userAuthToken.getUser();
         SigninResponse signinResponse = new SigninResponse();
-        signinResponse.setId(user.getUuid());
+        signinResponse.setId(userAuthToken.getUuid());
         signinResponse.setMessage("SIGNED IN SUCCESSFULLY");
+
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("access-token", userAuthToken.getAccessToken());
         return new ResponseEntity<SigninResponse>(signinResponse, httpHeaders, HttpStatus.OK);

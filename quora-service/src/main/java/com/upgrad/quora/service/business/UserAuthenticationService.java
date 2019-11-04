@@ -25,10 +25,12 @@ public class UserAuthenticationService {
     @Autowired
     private PasswordCryptographyProvider passwordCryptographyProvider;
 
+    // this is signin method
     @Transactional(propagation = Propagation.REQUIRED)
     public UserAuthEntity authenticate(final String username, final String password) throws AuthenticationFailedException {
 
         UserEntity user = userDao.getUserbyUsername(username);
+        // if there is no entry in the userEntity table with the username given by user
         if (user == null) throw new AuthenticationFailedException("ATH-001", "This username does not exist");
 
         String encryptedPassword = passwordCryptographyProvider.encrypt(password, user.getSalt());
@@ -44,9 +46,11 @@ public class UserAuthenticationService {
             userAuthEntity.setExpiresAt(expiresAt);
             userAuthEntity.setAccessToken(jwtTokenProvider.generateToken(user.getUuid(), now, expiresAt));
             userAuthEntity.setUuid(user.getUuid());
+            // The userAuthEntity is created
             userDao.createAuthEntity(userAuthEntity);
             return userAuthEntity;
         } else {
+            // if password provided by user does not match
             throw new AuthenticationFailedException("ATH-002", "Password failed");
         }
     }
@@ -54,12 +58,16 @@ public class UserAuthenticationService {
     @Transactional(propagation = Propagation.REQUIRED)
     public UserAuthEntity signOut(String accessToken) throws SignOutRestrictedException {
       UserAuthEntity userAuthEntity = userDao.getUserByAuthToken(accessToken);
+
       //If the user has signed in there will be an entry in the userAuth table
       if(userAuthEntity==null)throw new SignOutRestrictedException("SGR-001","User is not Signed in");
+
       // if there an entry with the accessToken then update the log out time with current time
       userAuthEntity.setLogoutAt(ZonedDateTime.now());
+
       //update database with the logged out detail
       userDao.updateUserAuth(userAuthEntity);
+
       // return the updated authEntity
       return userAuthEntity;
     }

@@ -71,6 +71,11 @@ public class UserDao {
         }
     }
 
+    // deletes the authentity entry
+    public void deleteUserAuthEntity(UserAuthEntity userAuthEntity){
+        entityManager.remove(userAuthEntity);
+    }
+    // updates the authentity
     public void updateUserAuth(UserAuthEntity userAuthEntity){
         entityManager.merge(userAuthEntity);
     }
