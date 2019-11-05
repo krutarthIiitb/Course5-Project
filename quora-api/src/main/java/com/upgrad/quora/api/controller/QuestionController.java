@@ -6,6 +6,7 @@ import com.upgrad.quora.service.business.CommonBusinessService;
 import com.upgrad.quora.service.business.QuestionBusinessService;
 import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthEntity;
+import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
 import com.upgrad.quora.service.exception.UserNotFoundException;
@@ -148,6 +149,39 @@ public class QuestionController {
             }
             return new ResponseEntity<QuestionDeleteResponse>(questionResponse, HttpStatus.OK);
         }
+
+    }
+    @RequestMapping(method = RequestMethod.GET, path = "/question/all/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<QuestionResponse> getAllQustion(@PathVariable("userId") String userId, @RequestHeader("authorization") String authorization) throws AuthorizationFailedException, UserNotFoundException {
+        List<QuestionDetailsResponse> responseList = new ArrayList<QuestionDetailsResponse>();
+        UserEntity userEntity = commonBusinessService.getUserByUuid(userId);
+
+        if (authorization == null) {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        }
+        // Checking for the user associated to the access found in the header , returns exception if not found.
+        UserAuthEntity userAuthEntity = commonBusinessService.getUser(authorization);
+        if (userAuthEntity == null) {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        } else {
+            /*
+                Need to add this condition as we have needed to check wehther user's token is expired or not
+                (userAuthEntity.getExpiresAt() != null && LocalDateTime.now().isAfter(userAuthEntity.getExpiresAt())) ||
+             */
+            if ((userAuthEntity.getLogoutAt() != null)) {
+                throw new AuthorizationFailedException("ATHR-002", "User is signed out. Sign in first to get user details.");
+            } else {
+                List<QuestionEntity> list = questionBusinessService.getAllQuestion();
+                for (QuestionEntity q : list) {
+                    QuestionDetailsResponse response = new QuestionDetailsResponse();
+                    response.setId(q.getUuid());
+                    response.setContent(q.getContent());
+                    responseList.add(response);
+                }
+            }
+        }
+        System.out.println("here");
+        return new ResponseEntity(responseList, HttpStatus.OK);
 
     }
 }

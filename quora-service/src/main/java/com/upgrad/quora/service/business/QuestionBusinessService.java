@@ -33,6 +33,12 @@ public class QuestionBusinessService {
         return questionEntityList;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<QuestionEntity> getAllQuestionbyUser(String user_uuid) throws NullPointerException {
+        List<QuestionEntity> questionEntityList = questionDAO.getAllQuestionByUser(user_uuid);
+        return questionEntityList;
+    }
+
 
     @Transactional(propagation = Propagation.REQUIRED)
     public QuestionEntity updateQuestion(QuestionEntity questionEntity) throws NullPointerException, AuthorizationFailedException, InvalidQuestionException {

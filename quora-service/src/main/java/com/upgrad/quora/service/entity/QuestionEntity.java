@@ -38,8 +38,8 @@ WITH (
 @NamedQueries(
         {
                 @NamedQuery(name = "getAll", query = "select q from QuestionEntity q "),
-                @NamedQuery(name = "questionByUuid", query = "select q from QuestionEntity q where q.uuid =:uuid")
-                //@NamedQuery(name = "userByUuid", query = "select u from UserEntity u where u.uuid =:uuid")
+                @NamedQuery(name = "questionByUuid", query = "select q from QuestionEntity q where q.uuid =:uuid"),
+                @NamedQuery(name = "getAllQuestionByUser", query = "select q from QuestionEntity q where q.user.uuid=:user_uuid")
         }
 )
 public class QuestionEntity implements Serializable {

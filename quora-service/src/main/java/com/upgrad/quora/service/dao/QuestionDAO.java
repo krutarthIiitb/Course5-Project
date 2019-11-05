@@ -22,23 +22,29 @@ public class QuestionDAO {
         return question;
     }
 
-    public List<QuestionEntity> getAllQuestion(){
-        return entityManager.createNamedQuery("getAll",QuestionEntity.class).getResultList();
-    }
-    public QuestionEntity getQuestionByUuid(String uuid)  {
-        QuestionEntity entity = null;
-        try {
-             entity = entityManager.createNamedQuery("questionByUuid", QuestionEntity.class).setParameter("uuid", uuid).getSingleResult();
-        }catch (NoResultException nre){
-            return null;
-        }
-        return  entity;
-    }
-    public QuestionEntity updateQuestion(QuestionEntity questionEntity){
-        return entityManager.merge(questionEntity);
-    }
-    public void deleteQuestion(QuestionEntity questionEntity){
-         entityManager.remove(questionEntity);
+    public List<QuestionEntity> getAllQuestion() {
+        return entityManager.createNamedQuery("getAll", QuestionEntity.class).getResultList();
     }
 
+    public QuestionEntity getQuestionByUuid(String uuid) {
+        QuestionEntity entity = null;
+        try {
+            entity = entityManager.createNamedQuery("questionByUuid", QuestionEntity.class).setParameter("uuid", uuid).getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+        return entity;
+    }
+
+    public QuestionEntity updateQuestion(QuestionEntity questionEntity) {
+        return entityManager.merge(questionEntity);
+    }
+
+    public void deleteQuestion(QuestionEntity questionEntity) {
+        entityManager.remove(questionEntity);
+    }
+
+    public List<QuestionEntity> getAllQuestionByUser(String uuid) {
+        return entityManager.createNamedQuery("getAllQuestionByUser", QuestionEntity.class).setParameter("user_uuid", uuid).getResultList();
+    }
 }

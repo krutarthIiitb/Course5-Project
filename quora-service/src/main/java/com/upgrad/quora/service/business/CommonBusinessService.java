@@ -52,4 +52,13 @@ public class CommonBusinessService {
         }
         return userAuthEntity;
     }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public UserEntity getUserByUuid(String uuid) throws UserNotFoundException {
+        UserEntity userEntity = userDao.getUser(uuid);
+        if (userEntity == null) {
+            throw new UserNotFoundException("USR-001", "User with entered uuid whose question details are to be seen does not exist");
+        }
+        return userEntity;
+    }
 }
