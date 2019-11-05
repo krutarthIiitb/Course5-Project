@@ -41,16 +41,20 @@ public class QuestionController {
         if (userAuthEntity == null) {
             throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
         } else {
-            QuestionEntity questionEntity = new QuestionEntity();
-            questionEntity.setContent(questionRequest.getContent());
-            questionEntity.setDate(LocalDateTime.now());
-            questionEntity.setUser(userAuthEntity.getUser());
-            questionEntity.setUuid(UUID.randomUUID().toString());
-            questionEntity = questionBusinessService.createQuestion(questionEntity);
-            QuestionResponse questionResponse = new QuestionResponse();
-            questionResponse.setId(questionEntity.getUuid());
-            questionResponse.setStatus("QUESTION CREATED");
-            return new ResponseEntity<QuestionResponse>(questionResponse, HttpStatus.OK);
+            if ((userAuthEntity.getLogoutAt() != null)) {
+                throw new AuthorizationFailedException("ATHR-002", "User is signed out. Sign in first to get user details.");
+            } else {
+                QuestionEntity questionEntity = new QuestionEntity();
+                questionEntity.setContent(questionRequest.getContent());
+                questionEntity.setDate(LocalDateTime.now());
+                questionEntity.setUser(userAuthEntity.getUser());
+                questionEntity.setUuid(UUID.randomUUID().toString());
+                questionEntity = questionBusinessService.createQuestion(questionEntity);
+                QuestionResponse questionResponse = new QuestionResponse();
+                questionResponse.setId(questionEntity.getUuid());
+                questionResponse.setStatus("QUESTION CREATED");
+                return new ResponseEntity<QuestionResponse>(questionResponse, HttpStatus.OK);
+            }
         }
 
 

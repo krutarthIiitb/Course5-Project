@@ -38,11 +38,16 @@ public class QuestionBusinessService {
         List<QuestionEntity> questionEntityList = questionDAO.getAllQuestionByUser(user_uuid);
         return questionEntityList;
     }
+    @Transactional(propagation = Propagation.REQUIRED)
+    public QuestionEntity getQuestionByUuid(String uuid) throws NullPointerException {
+        QuestionEntity questionEntity1 = questionDAO.getQuestionByUuid(uuid);
+        return questionEntity1;
+    }
 
 
     @Transactional(propagation = Propagation.REQUIRED)
     public QuestionEntity updateQuestion(QuestionEntity questionEntity) throws NullPointerException, AuthorizationFailedException, InvalidQuestionException {
-        QuestionEntity questionEntity1 = questionDAO.getQuestionByUuid(questionEntity.getUuid());
+        QuestionEntity questionEntity1 = getQuestionByUuid(questionEntity.getUuid());
         if (questionEntity1 != null) {
             if (questionEntity1.getUser() != null && questionEntity1.getUser().getId() == questionEntity.getUser().getId()) {
                 questionEntity1 = questionDAO.updateQuestion(questionEntity);
@@ -57,7 +62,7 @@ public class QuestionBusinessService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public QuestionEntity deleteQuestion(QuestionEntity questionEntity) throws NullPointerException, AuthorizationFailedException, InvalidQuestionException {
-        QuestionEntity questionEntity1 = questionDAO.getQuestionByUuid(questionEntity.getUuid());
+        QuestionEntity questionEntity1 = getQuestionByUuid(questionEntity.getUuid());
         if (questionEntity1 != null) {
             if (questionEntity1.getUser() != null && (questionEntity1.getUser().getId() == questionEntity.getUser().getId()
                     || !questionEntity1.getUser().getRole().equals("nonadmin"))) {
