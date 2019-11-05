@@ -10,6 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.Date;
+
 @Service
 public class CommonBusinessService {
 
@@ -21,8 +26,8 @@ public class CommonBusinessService {
         UserAuthEntity userAuthEntity = userDao.getUserByAuthToken(accessToken);
         UserEntity userEntity = userDao.getUser(uuid);
 
-        if(userAuthEntity==null)throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
-        if(userEntity==null)throw new UserNotFoundException("USR-001","User with entered uuid does not exist");
+        if (userAuthEntity == null) throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        if (userEntity == null) throw new UserNotFoundException("USR-001", "User with entered uuid does not exist");
 
         if (userAuthEntity != null && userEntity != null) {
             // if we came here it means there is a user and there is an authToken, lets compare both
@@ -34,6 +39,23 @@ public class CommonBusinessService {
                 }
             }
         }
+        return userAuthEntity;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public UserAuthEntity getUser(String accessToken) throws AuthorizationFailedException, UserNotFoundException {
+        UserAuthEntity userAuthEntity = userDao.getUserByAuthToken(accessToken);
+
+
+        if (userAuthEntity == null) {
+            throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        } else {
+            if ((userAuthEntity.getExpiresAt() != null && userAuthEntity.getExpiresAt().isAfter(LocalDateTime.now())) ||
+                    (userAuthEntity.getLogoutAt() != null && userAuthEntity.getLogoutAt().isAfter(LocalDateTime.now()))) {
+                throw new AuthorizationFailedException("ATHR-002", "User is signed out. Sign in first to get user details.");
+            }
+        }
+        System.out.println(userAuthEntity.getUuid());
         return userAuthEntity;
     }
 }

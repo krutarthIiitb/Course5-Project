@@ -11,7 +11,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.time.ZonedDateTime;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 /*
 CREATE TABLE IF NOT EXISTS USER_AUTH(
@@ -58,14 +59,14 @@ public class UserAuthEntity implements Serializable {
     private String accessToken;
 
     @Column(name = "EXPIRES_AT")
-    private ZonedDateTime expiresAt;
+    private LocalDateTime expiresAt;
 
     @Column(name = "LOGIN_AT")
     @NotNull
-    private ZonedDateTime loginAt;
+    private LocalDateTime loginAt;
 
     @Column(name = "LOGOUT_AT")
-    private ZonedDateTime logoutAt;
+    private LocalDateTime logoutAt;
 
     public long getId() {
         return id;
@@ -99,29 +100,30 @@ public class UserAuthEntity implements Serializable {
         this.accessToken = accessToken;
     }
 
-    public ZonedDateTime getExpiresAt() {
+    public LocalDateTime getExpiresAt() {
         return expiresAt;
     }
 
-    public void setExpiresAt(ZonedDateTime expiresAt) {
+    public void setExpiresAt(LocalDateTime expiresAt) {
         this.expiresAt = expiresAt;
     }
 
-    public ZonedDateTime getLoginAt() {
+    public LocalDateTime getLoginAt() {
         return loginAt;
     }
 
-    public void setLoginAt(ZonedDateTime loginAt) {
+    public void setLoginAt(LocalDateTime loginAt) {
         this.loginAt = loginAt;
     }
 
-    public ZonedDateTime getLogoutAt() {
+    public LocalDateTime getLogoutAt() {
         return logoutAt;
     }
 
-    public void setLogoutAt(ZonedDateTime logoutAt) {
+    public void setLogoutAt(LocalDateTime logoutAt) {
         this.logoutAt = logoutAt;
     }
+
     @Override
     public boolean equals(Object obj) {
         return new EqualsBuilder().append(this, obj).isEquals();

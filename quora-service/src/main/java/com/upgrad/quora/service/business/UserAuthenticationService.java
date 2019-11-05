@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 /*Author : Deepthi Vemparala
 When user is trying to login to the system, the user is authenticated by checking the username and password credentials
 against the data that is present in the database and userAuthToken is generated
@@ -40,8 +40,8 @@ public class UserAuthenticationService {
             //When user is trying to sigin the UserAuthEntity is created
             UserAuthEntity userAuthEntity = new UserAuthEntity();
             userAuthEntity.setUser(user);
-            final ZonedDateTime now = ZonedDateTime.now();
-            final ZonedDateTime expiresAt = now.plusHours(8);
+            final LocalDateTime now = LocalDateTime.now();
+            final LocalDateTime expiresAt = now.plusHours(8);
             userAuthEntity.setLoginAt(now);
             userAuthEntity.setExpiresAt(expiresAt);
             userAuthEntity.setAccessToken(jwtTokenProvider.generateToken(user.getUuid(), now, expiresAt));
@@ -57,18 +57,18 @@ public class UserAuthenticationService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public UserAuthEntity signOut(String accessToken) throws SignOutRestrictedException {
-      UserAuthEntity userAuthEntity = userDao.getUserByAuthToken(accessToken);
+        UserAuthEntity userAuthEntity = userDao.getUserByAuthToken(accessToken);
 
-      //If the user has signed in there will be an entry in the userAuth table
-      if(userAuthEntity==null)throw new SignOutRestrictedException("SGR-001","User is not Signed in");
+        //If the user has signed in there will be an entry in the userAuth table
+        if (userAuthEntity == null) throw new SignOutRestrictedException("SGR-001", "User is not Signed in");
 
-      // if there an entry with the accessToken then update the log out time with current time
-      userAuthEntity.setLogoutAt(ZonedDateTime.now());
+        // if there an entry with the accessToken then update the log out time with current time
+        userAuthEntity.setLogoutAt(LocalDateTime.now());
 
-      //update database with the logged out detail
-      userDao.updateUserAuth(userAuthEntity);
+        //update database with the logged out detail
+        userDao.updateUserAuth(userAuthEntity);
 
-      // return the updated authEntity
-      return userAuthEntity;
+        // return the updated authEntity
+        return userAuthEntity;
     }
 }
