@@ -37,8 +37,8 @@ WITH (
 @Table(name = "QUESTION")
 @NamedQueries(
         {
-                //@NamedQuery(name = "userByName", query = "select q from QuestionEntity q "),
-                //@NamedQuery(name = "userByEmail", query = "select u from UserEntity u where u.email =:email"),
+                @NamedQuery(name = "getAll", query = "select q from QuestionEntity q "),
+                @NamedQuery(name = "questionByUuid", query = "select q from QuestionEntity q where q.uuid =:uuid")
                 //@NamedQuery(name = "userByUuid", query = "select u from UserEntity u where u.uuid =:uuid")
         }
 )

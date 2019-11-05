@@ -27,7 +27,7 @@ public class QuestionControllerTest {
     //This test case passes when you try to create the question but the JWT token entered does not exist in the database.
     @Test
     public void createQuestionWithNonExistingAccessToken() throws Exception {
-            mvc.perform(MockMvcRequestBuilders.post("/question/create?content=my_question").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE).header("authorization", "non_existing_access_token"))
+        mvc.perform(MockMvcRequestBuilders.post("/question/create?content=my_question").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE).header("authorization", "non_existing_access_token"))
                 .andExpect(status().isForbidden())
                 .andExpect(MockMvcResultMatchers.jsonPath("code").value("ATHR-001"));
     }

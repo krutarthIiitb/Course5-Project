@@ -49,13 +49,7 @@ public class CommonBusinessService {
 
         if (userAuthEntity == null) {
             throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
-        } else {
-            if ((userAuthEntity.getExpiresAt() != null && userAuthEntity.getExpiresAt().isAfter(LocalDateTime.now())) ||
-                    (userAuthEntity.getLogoutAt() != null && userAuthEntity.getLogoutAt().isAfter(LocalDateTime.now()))) {
-                throw new AuthorizationFailedException("ATHR-002", "User is signed out. Sign in first to get user details.");
-            }
         }
-        System.out.println(userAuthEntity.getUuid());
         return userAuthEntity;
     }
 }
