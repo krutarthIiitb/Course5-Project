@@ -4,6 +4,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -56,26 +57,18 @@ public class QuestionEntity implements Serializable {
     @Column(name = "content")
     @NotNull
     @Size(max = 500)
+    private String content;
 
-
-    public UserEntity getUser() {
-        return user;
-    }
-
-    public void setUser(UserEntity user) {
-        this.user = user;
-    }
 
     @Column(name = "DATE")
     private LocalDateTime date;
 
     @ManyToOne
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name="USER_ID")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @Size(max = 30)
+    @NotNull
     private UserEntity user;
 
-    private String content;
 
     public Long getId() {
         return id;
@@ -108,16 +101,14 @@ public class QuestionEntity implements Serializable {
     public void setDate(LocalDateTime date) {
         this.date = date;
     }
-    @Override
-    public boolean equals(Object obj) {
-        return new EqualsBuilder().append(this, obj).isEquals();
+
+    public UserEntity getUser() {
+        return user;
     }
 
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(this).hashCode();
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
-
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
