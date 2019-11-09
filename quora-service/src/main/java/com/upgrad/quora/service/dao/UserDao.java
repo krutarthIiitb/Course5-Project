@@ -1,5 +1,6 @@
 package com.upgrad.quora.service.dao;
 
+import com.upgrad.quora.service.entity.Question;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import org.springframework.stereotype.Repository;
@@ -33,7 +34,14 @@ public class UserDao {
             return null;
         }
     }
+    public UserEntity getUserByEmail(final String email, final String Password) {
+        try {
+            return entityManager.createNamedQuery("userByEmail", UserEntity.class).setParameter("email", email).getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
 
+        }
+    }
     public UserEntity getUserByEmail(final String email) {
         try {
             return entityManager.createNamedQuery("userByEmail", UserEntity.class).setParameter("email", email).getSingleResult();
@@ -63,6 +71,11 @@ public class UserDao {
         return userAuthEntity;
     }
 
+    public void createQuestion(Question qn){
+        entityManager.persist(qn);
+
+    }
+
     public UserAuthEntity getUserAuthEntity(String uuid){
         try{
             return entityManager.createNamedQuery("userAuthTokenByuuid", UserAuthEntity.class).setParameter("uuid",uuid).getSingleResult();
@@ -70,6 +83,7 @@ public class UserDao {
             return null;
         }
     }
+
 
     // deletes the authentity entry
     public void deleteUserAuthEntity(UserAuthEntity userAuthEntity){

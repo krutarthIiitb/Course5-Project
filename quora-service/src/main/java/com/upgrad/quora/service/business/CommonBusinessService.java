@@ -1,6 +1,7 @@
 package com.upgrad.quora.service.business;
 
 import com.upgrad.quora.service.dao.UserDao;
+import com.upgrad.quora.service.entity.Question;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
@@ -9,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Service
 public class CommonBusinessService {
@@ -36,4 +40,24 @@ public class CommonBusinessService {
         }
         return userAuthEntity;
     }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void createQuestion(String accessToken, Question qn) throws AuthorizationFailedException {
+        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+        UserAuthEntity userAuthEntity = userDao.getUserByAuthToken(accessToken);
+        if(userAuthEntity==null)throw new AuthorizationFailedException("ATHR-001", "User has not signed in");
+        if(userAuthEntity.getExpiresAt().equals(timeStamp)) throw new AuthorizationFailedException("ATHR-001", "User is signed out.Sign in first to post a question");
+
+        qn.setUuid(userAuthEntity.getUuid());
+        qn.setUser(userAuthEntity.getUser());
+        qn.setDate(timeStamp);
+        userDao.createQuestion(qn);
+
+
+
+    }
+
+
+
+
 }
