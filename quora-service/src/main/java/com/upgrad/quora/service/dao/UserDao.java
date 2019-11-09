@@ -1,5 +1,6 @@
 package com.upgrad.quora.service.dao;
 
+import com.upgrad.quora.service.entity.Question;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import org.springframework.stereotype.Repository;
@@ -70,6 +71,11 @@ public class UserDao {
         return userAuthEntity;
     }
 
+    public void createQuestion(Question qn){
+        entityManager.persist(qn);
+
+    }
+
     public UserAuthEntity getUserAuthEntity(String uuid){
         try{
             return entityManager.createNamedQuery("userAuthTokenByuuid", UserAuthEntity.class).setParameter("uuid",uuid).getSingleResult();
@@ -77,6 +83,7 @@ public class UserDao {
             return null;
         }
     }
+
 
     // deletes the authentity entry
     public void deleteUserAuthEntity(UserAuthEntity userAuthEntity){
